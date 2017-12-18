@@ -26,14 +26,23 @@ sAutoNDE Minimize(const sAutoNDE& at){
     cout << i << " "<< tab[i] << endl;
   }
 
-  for(size_t i = 0 ; i != r.trans.size() ; ++i ){
-    for(size_t c = 0;c != r.trans[i].size();c++){
-      for(etatset_t::iterator it = r.trans[i][c].begin();it != r.trans[i][c].end; it++){
-        
+  for(size_t i = 0; i <= tab.size();i++){
+    for(size_t j = i + 1 ; j <= tab.size();j++){
+        int memeEtat = 0;
+        for(size_t c = 0; c != r.trans[i].size();c++){
+          cout << "ok";
+          if(*r.trans[i][c].begin() == *r.trans[j][c].begin()){
+          memeEtat = 1;
+          }
+
+        }
+        if( memeEtat == 0){
+          tab[j] = tab[i];
+        }
       }
     }
 
-  }
+
   cout << tab.size() << at.trans.size()<< endl;
   */
 
