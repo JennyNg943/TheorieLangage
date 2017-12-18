@@ -14,9 +14,8 @@ sAutoNDE Minimize(const sAutoNDE& at){
   //TODO définir cette fonction
 
   sAutoNDE r;
-/*  r = Determinize(at);
+  r = Determinize(at);
   vector<char> tab(r.trans.size(),'B');
-
   for(size_t i = 0 ; i != r.trans.size() ; ++i ){
     for(etatset_t::iterator it_et = r.finaux.begin() ; it_et != r.finaux.end() ; it_et++ ){
       if(i == *it_et){
@@ -26,13 +25,13 @@ sAutoNDE Minimize(const sAutoNDE& at){
     cout << i << " "<< tab[i] << endl;
   }
 
-  for(size_t i = 0; i <= tab.size();i++){
-    for(size_t j = i + 1 ; j <= tab.size();j++){
+  for(size_t i = 0; i < tab.size();i++){
+    for(size_t j = i+1; j < tab.size();j++){
+
         int memeEtat = 0;
         for(size_t c = 0; c != r.trans[i].size();c++){
-          cout << "ok";
-          if(*r.trans[i][c].begin() == *r.trans[j][c].begin()){
-          memeEtat = 1;
+          if(tab[*r.trans[j][c].begin()] != tab[*r.trans[i][c].begin()]){
+            memeEtat = 1;
           }
 
         }
@@ -41,10 +40,6 @@ sAutoNDE Minimize(const sAutoNDE& at){
         }
       }
     }
-
-
-  cout << tab.size() << at.trans.size()<< endl;
-  */
 
 
   return r;
