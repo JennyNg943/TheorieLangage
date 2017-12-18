@@ -154,6 +154,27 @@ sAutoNDE Determinize(const sAutoNDE& at){
 		r.trans = trans;
 	}
 
+	//Verifie si l'automate determinise possede un puit. Si oui, fait boucler le puit sur lui meme, sinon reduit la matrice de transition de 1
+	bool puit = false;
+	for(size_t i = 0 ; i != trans.size() ; ++i ){
+		for(size_t c = 0 ; c < trans[i].size() ; ++c ){
+			for(etatset_t::iterator it = trans[i][c].begin() ; it != trans[i][c].end() ; ++it ){
+				if(*it == (etat_t)(r.nb_etats-1)) puit = true;
+			}
+		}
+	}
+
+	if(puit){
+		trans[trans.size()-1].resize(r.nb_symbs);
+		for(size_t c = 0; c<r.nb_symbs; c++){
+			trans[trans.size()-1][c].insert((etat_t)(r.nb_etats-1));
+		}
+	}
+	else trans.resize(trans.size()-1);
+	
+	r.trans = trans;
+
+	r.nb_etats = trans.size(); 
 	return r;
 }
 

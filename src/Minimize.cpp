@@ -14,7 +14,7 @@ sAutoNDE Minimize(const sAutoNDE& at){
   //TODO définir cette fonction
 
   sAutoNDE r;
-  r = Determinize(at);
+/*  r = Determinize(at);
   vector<char> tab(r.trans.size(),'B');
 
   for(size_t i = 0 ; i != r.trans.size() ; ++i ){
@@ -35,6 +35,7 @@ sAutoNDE Minimize(const sAutoNDE& at){
 
   }
   cout << tab.size() << at.trans.size()<< endl;
+  */
 
 
   return r;
