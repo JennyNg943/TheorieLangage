@@ -33,16 +33,26 @@ sAutoNDE Minimize(const sAutoNDE& at){
           if(tab[*r.trans[j][c].begin()] != tab[*r.trans[i][c].begin()]){
             memeEtat = 1;
           }
-          cout << tab[*r.trans[j][c].begin()] << tab[*r.trans[i][c].begin()]  << " " << i << " "<< j << " " << c << endl;
         }
-        if(memeEtat == 0){
-          tab[j] = tab[i];
-          cout << "e1 " << j <<" "<< tab[j] << endl;
-        }else{
-          tab[j] = nbClasse +1;
-          nbClasse++;
-          cout << "e2 " << j <<" "<< tab[j] << endl;
+        if(tab[j] == 0){
+          if(tab[i] == 0){
+            if(memeEtat == 1){
+              tab[j] = nbClasse +1;
+              nbClasse++;
+            }
+          }
+        }else if(tab[i] == tab[j]){
+            cout <<"Test" << j <<" "<< tab[j] << endl;
+          if(memeEtat == 0 && tab[i] != 0){
+            tab[j] = tab[i];
+            cout << "e1 " << j <<" "<< tab[j] << endl;
+          }else{
+            tab[j] = nbClasse +1;
+            nbClasse++;
+            cout << "e2 " << j <<" "<< tab[j] << endl;
+          }
         }
+
       }
       cout << i << " "<< tab[i] << endl;
     }
