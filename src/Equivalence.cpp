@@ -59,11 +59,6 @@ std::string Automate2ExpressionRationnelle(sAutoNDE at){
 	at2.trans[0].clear();
 	at2.epsilon[0].insert(1);
 
-
-
-
-
-
 	//On ouvre un fichier correspondant au path. S'il en existe deja un on le vide.
 	string path = "test.txt";
 	ofstream f(path, ios::trunc);
@@ -134,7 +129,7 @@ std::string Automate2ExpressionRationnelle(sAutoNDE at){
 			}
 		}
 		sr += sri;
-	}
+	} 
 
 cout << sr << endl;
 

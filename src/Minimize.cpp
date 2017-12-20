@@ -54,7 +54,6 @@ sAutoNDE Minimize(const sAutoNDE& at){
             //cout << "e2 " << j <<" "<< tab[j] << endl;
           }
         }
-
       }
       //cout << i << " "<< tab[i] << endl;
     }
@@ -62,12 +61,12 @@ sAutoNDE Minimize(const sAutoNDE& at){
   for(size_t i =0; i < tab.size(); i++){
     classes.insert(tab[i]);
   }
-  
+
   vector<etatset_t> new_etats(classes.size());
   for(size_t i =0; i < tab.size(); i++){
     new_etats[tab[i]].insert((etat_t) i);
   }
-  
+
   trans.resize(new_etats.size());
   for(size_t i = 0; i < new_etats.size(); i++){
     trans[i].resize(at.nb_symbs);
@@ -81,15 +80,20 @@ sAutoNDE Minimize(const sAutoNDE& at){
             for(set<etat_t>::iterator it = r.trans[*ite][c].begin() ; it != r.trans[*ite][c].end() ; it++){
               if(new_etats[i].find(*it) != new_etats[i].end()){
                 trans[in][c].insert((etat_t)i);
-                cout << r.initial << " " << in << " " << *ite << endl;
               }
             }
           }
         }
       }
     }
-    
+
   r.initial = tab[r.initial];
+  etatset_t etatFinaux;
+  for(etatset_t::iterator it_et = r.finaux.begin() ; it_et != r.finaux.end() ; it_et++ ){
+    etatFinaux.insert(tab[*it_et]);
+  }
+
+  r.finaux = etatFinaux;
 
 r.trans = trans;
   return r;
