@@ -7,6 +7,7 @@
 #include "Equivalence.h"
 #include "Accept.h"
 #include "Determinize.h"
+#include "Minimize.h"
 
 using namespace std;
 ////////////////////////////////////////////////////////////////////////////////
@@ -14,10 +15,12 @@ using namespace std;
 std::string Automate2ExpressionRationnelle(sAutoNDE at){
   //TODO définir cette fonction
 	sAutoNDE at2;
+
+	//Creation de l'automate arrange
 	at2 = Determinize(at);
 	vector<etatset_t> prec, prece;
 	at2.nb_etats = at2.nb_etats + 2;
-	etat_t ini = 0, fin = at2.nb_etats - 2;
+	etat_t ini = 0, fin = at2.nb_etats - 1;
 	etatset_t list_tr, list_finaux = at2.finaux, n_final;
 	std::vector<etat_t> visites;
 	n_final.insert(fin);
@@ -43,6 +46,7 @@ std::string Automate2ExpressionRationnelle(sAutoNDE at){
 		}
 	}
 
+	//Creation des e-transitions du nouvel etat initial a l'ancien et des anciens etats finaux au nouveau
 	for(etatset_t::iterator it = at2.finaux.begin() ; it != at2.finaux.end() ; it++ ){
 		for(size_t i = 0 ; i != at2.trans.size() ; ++i ){
 			for(size_t c = 0 ; c < at2.trans[i].size() ; ++c ){
@@ -59,55 +63,7 @@ std::string Automate2ExpressionRationnelle(sAutoNDE at){
 	at2.trans[0].clear();
 	at2.epsilon[0].insert(1);
 
-	//On ouvre un fichier correspondant au path. S'il en existe deja un on le vide.
-	string path = "test.txt";
-	ofstream f(path, ios::trunc);
-
-	//On remplit le fichier .gv
-	f << "digraph finite_state_machine {"<< endl;
-	f << "	rankdir=LR;"<<endl;
-	f << "  	size=\"10,10\""<<endl << endl;
-	f << "	node [shape = doublecircle]; ";
-
-	//On parcourt les etats finaux pour les ajouter au .gv
-	for(etatset_t::iterator it = at2.finaux.begin() ; it != at2.finaux.end() ; it++ ){
-		//cout << *it << endl;
-		f << *it << " ";
-	}
-
-	f << ";";
-	f << endl;
-	f << "	node [shape = point ]; q;" << endl;
-	f << "	node [shape = circle]; " << endl << endl;
-	f << "	q -> " << at2.initial << ";" << endl;
-
-	//On ajoute toutes les transitions au .gv
-	for(size_t i = 0 ; i != at2.trans.size() ; ++i ){
-		for(size_t c = 0 ; c < at2.trans[i].size() ; ++c ){
-			for(etatset_t::iterator it = at2.trans[i][c].begin() ; it != at2.trans[i][c].end() ; ++it ){
-				f <<"	"<< i << " -> " <<  *it << " [label = \"" << (char)(c + ASCII_A) << "\"];" <<  std::endl;
-			}
-		}
-	}
-
-	f << std::endl;
-
-	//On ajoute toutes les e-transitions au .gv
-	for(size_t i = 0 ; i < at2.epsilon.size() ; ++i ){
-		for(etatset_t::iterator it = at2.epsilon[i].begin() ; it != at2.epsilon[i].end() ; ++it ){
-			f <<"	"<< i << " -> " <<  *it << " [label = \"ε\"];" << std::endl;
-		}
-	}
-	f << std::endl;
-	f << "}";
-	f << std::endl;
-
-	string name = path.substr(0, path.size()-3);
-	//On crée une image au format png avec le .gv que l'on vient de créer.
-	string command = "dot -Tpng " + path + " -o " + name + ".png";
-	system(command.c_str());
-
-
+	//Creation de l'expression rationelle (ne fonctionne pas)
 	std::string sri = "", sr = "";
 
 	for(size_t i = 1 ; i != at2.trans.size() ; ++i ){
@@ -129,7 +85,7 @@ std::string Automate2ExpressionRationnelle(sAutoNDE at){
 			}
 		}
 		sr += sri;
-	} 
+	}
 
 cout << sr << endl;
 
@@ -143,6 +99,7 @@ bool PseudoEquivalent(const sAutoNDE& a1, const sAutoNDE& a2, unsigned int word_
 	string mot, m;
 	set<string> liste_mots;
 
+	//Genere tous les mots de longueur word_size_max ou moins
 	for(size_t c =0; c<a1.nb_symbs; c++) liste_mots.insert(string(1,(char)(c+ASCII_A)));
 	for(unsigned int i = 0; i < word_size_max; i++){
 		for(set<string>::iterator it = liste_mots.begin(); it!=liste_mots.end(); it++){
@@ -150,6 +107,7 @@ bool PseudoEquivalent(const sAutoNDE& a1, const sAutoNDE& a2, unsigned int word_
 			if((*it).size()<i){
 				for(size_t c =0; c<a1.nb_symbs; c++){
 					m = *it + string(1,(char)(c+ASCII_A));
+					//Verifie que le mot genere est accepte par les deux automates
 					if(Accept(a1, m) != Accept(a2, m)) return false;
 					liste_mots.insert(m);
 				}
@@ -161,7 +119,22 @@ bool PseudoEquivalent(const sAutoNDE& a1, const sAutoNDE& a2, unsigned int word_
 }////////////////////////////////////////////////////////////////////////////////
 
 bool Equivalent(const sAutoNDE& a1, const sAutoNDE& a2) {
-	//TODO définir cette fonction
-
-	return true;
+	sAutoNDE at1, at2;
+	bool eq = true;
+	//Minimise les automates
+	at1 = Minimize(a1), at2 = Minimize(a2);
+	if(at1.nb_etats == at2.nb_etats){
+		//Verifie que les etats finaux soient les memes 
+		if(at1.finaux != at2.finaux) eq = false;
+		//Verifie que les tables de transition soient les memes
+		else{
+			for(size_t i = 0; i < at1.trans.size(); i++){
+				for(size_t c =0; c < at1.nb_symbs; c++){
+					if(at1.trans[i][c] != at2.trans[i][c])  eq = false;
+				}
+			}
+		}
+	}
+	else eq = false;
+	return eq;
 }//******************************************************************************
